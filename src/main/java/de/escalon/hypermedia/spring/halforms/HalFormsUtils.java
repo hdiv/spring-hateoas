@@ -41,7 +41,6 @@ public class HalFormsUtils {
 			if (link instanceof Affordance) {
 				Affordance affordance = (Affordance) link;
 
-				// TODO: review! the first ActionDescriptor corresponds to the "self" link therefore does never add a template
 				for (int i = 0; i < affordance.getActionDescriptors().size(); i++) {
 					ActionDescriptor actionDescriptor = affordance.getActionDescriptors().get(i);
 					if (i == 0) {
@@ -53,7 +52,6 @@ public class HalFormsUtils {
 									: new Template(key != null ? key : actionDescriptor.getHttpMethod().toLowerCase());
 							template.setContentType(actionDescriptor.getConsumes());
 
-							// there is only one httpmethod??
 							template.setMethod(actionDescriptor.getHttpMethod());
 							TemplateActionInputParameterVisitor visitor = new TemplateActionInputParameterVisitor(template,
 									actionDescriptor, objectMapper);
@@ -75,9 +73,6 @@ public class HalFormsUtils {
 			final ActionDescriptor actionDescriptor, final Object propertyValue, final String name,
 			final ObjectMapper objectMapper) {
 		Map<String, Object> inputConstraints = actionInputParameter.getInputConstraints();
-
-		// TODO: templated comes from an Input attribute?
-		boolean templated = false;
 
 		boolean readOnly = inputConstraints.containsKey(ActionInputParameter.EDITABLE)
 				? !((Boolean) inputConstraints.get(ActionInputParameter.EDITABLE)) : true;
@@ -127,7 +122,7 @@ public class HalFormsUtils {
 			}
 		}
 
-		return new Property(name, readOnly, templated, value, null, regex, required, multi, suggest);
+		return new Property(name, readOnly, false, value, null, regex, required, multi, suggest);
 	}
 
 	static class TemplateActionInputParameterVisitor implements ActionInputParameterVisitor {
