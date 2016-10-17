@@ -1,6 +1,7 @@
 package de.escalon.hypermedia.spring.halforms;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.hateoas.RelProvider;
@@ -8,6 +9,7 @@ import org.springframework.hateoas.hal.CurieProvider;
 import org.springframework.hateoas.hal.Jackson2HalModule;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -24,13 +26,15 @@ public class HalFormsMessageConverter extends AbstractHttpMessageConverter<Objec
 
 	private final ObjectMapper objectMapper;
 
-	public HalFormsMessageConverter(final ObjectMapper objectMapper, final RelProvider relProvider, final CurieProvider curieProvider,
-			final MessageSourceAccessor messageSourceAccessor) {
+	public HalFormsMessageConverter(final ObjectMapper objectMapper, final RelProvider relProvider,
+			final CurieProvider curieProvider, final MessageSourceAccessor messageSourceAccessor) {
 		this.objectMapper = objectMapper;
 
 		objectMapper.registerModule(new Jackson2HalModule());
 		objectMapper.registerModule(new Jackson2HalFormsModule());
-		objectMapper.setHandlerInstantiator(new HalFormsHandlerInstantiator(relProvider, curieProvider, messageSourceAccessor, true));
+		objectMapper.setHandlerInstantiator(
+				new HalFormsHandlerInstantiator(relProvider, curieProvider, messageSourceAccessor, true));
+		setSupportedMediaTypes(Arrays.asList(MediaType.parseMediaType("application/prs.hal-forms+json")));
 	}
 
 	@Override
@@ -60,8 +64,7 @@ public class HalFormsMessageConverter extends AbstractHttpMessageConverter<Objec
 
 		try {
 			objectMapper.writeValue(jsonGenerator, entity);
-		}
-		catch (JsonProcessingException ex) {
+		} catch (JsonProcessingException ex) {
 			throw new HttpMessageNotWritableException("Could not write JSON: " + ex.getMessage(), ex);
 		}
 	}
