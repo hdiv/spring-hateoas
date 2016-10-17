@@ -11,12 +11,15 @@
 package de.escalon.hypermedia.spring;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MethodLinkBuilderFactory;
 import org.springframework.hateoas.core.AnnotationMappingDiscoverer;
 import org.springframework.hateoas.core.DummyInvocationUtils;
@@ -24,6 +27,7 @@ import org.springframework.hateoas.core.MappingDiscoverer;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import de.escalon.hypermedia.affordance.ActionDescriptor;
 import de.escalon.hypermedia.affordance.PartialUriTemplate;
@@ -37,12 +41,12 @@ public class AffordanceBuilderFactory implements MethodLinkBuilderFactory<Afford
 	private static final MappingDiscoverer MAPPING_DISCOVERER = new AnnotationMappingDiscoverer(RequestMapping.class);
 
 	@Override
-	public AffordanceBuilder linkTo(Method method, Object... parameters) {
+	public AffordanceBuilder linkTo(final Method method, final Object... parameters) {
 		return linkTo(method.getDeclaringClass(), method, parameters);
 	}
 
 	@Override
-	public AffordanceBuilder linkTo(Class<?> controller, Method method, Object... parameters) {
+	public AffordanceBuilder linkTo(final Class<?> controller, final Method method, final Object... parameters) {
 
 		String pathMapping = MAPPING_DISCOVERER.getMapping(controller, method);
 
@@ -69,7 +73,36 @@ public class AffordanceBuilderFactory implements MethodLinkBuilderFactory<Afford
 		return new AffordanceBuilder(partialUriTemplate.expand(values), Collections.singletonList(actionDescriptor));
 	}
 
-	private String join(Set<String> params) {
+	public AffordanceBuilder linkTo(final Link path, final RequestMethod method, final Object body) {
+		return linkTo(path, method,
+				body != null ? new CustomizableSpringActionInputParameter(body.getClass().getSimpleName(), body) : null);
+	}
+
+	public AffordanceBuilder linkTo(final Link path, final RequestMethod method, final Class<?> type) {
+		return linkTo(path, method,
+				type != null ? new CustomizableSpringActionInputParameter(type.getSimpleName(), type) : null);
+	}
+
+	private AffordanceBuilder linkTo(final Link path, final RequestMethod method,
+			final CustomizableSpringActionInputParameter parameter) {
+		String pathMapping = path.getHref();
+		List<String> params = path.getVariableNames();
+		String query = join(params);
+		String mapping = StringUtils.isEmpty(query) ? pathMapping : pathMapping + "{?" + query + "}";
+		PartialUriTemplate partialUriTemplate = new PartialUriTemplate(
+				AffordanceBuilder.getBuilder().build().toString() + mapping);
+
+		SpringActionDescriptor actionDescriptor = new SpringActionDescriptor(method.name().toLowerCase(), method.name());
+
+		if (parameter != null) {
+			actionDescriptor.setRequestBody(parameter);
+		}
+
+		return new AffordanceBuilder(partialUriTemplate.expand(Collections.emptyMap()),
+				Collections.singletonList((ActionDescriptor) actionDescriptor));
+	}
+
+	private String join(final Collection<String> params) {
 		StringBuilder sb = new StringBuilder();
 		for (String param : params) {
 			if (sb.length() > 0) {
@@ -81,12 +114,12 @@ public class AffordanceBuilderFactory implements MethodLinkBuilderFactory<Afford
 	}
 
 	@Override
-	public AffordanceBuilder linkTo(Class<?> target) {
+	public AffordanceBuilder linkTo(final Class<?> target) {
 		return linkTo(target, new Object[0]);
 	}
 
 	@Override
-	public AffordanceBuilder linkTo(Class<?> controller, Object... parameters) {
+	public AffordanceBuilder linkTo(final Class<?> controller, final Object... parameters) {
 		Assert.notNull(controller);
 
 		String mapping = MAPPING_DISCOVERER.getMapping(controller);
@@ -106,14 +139,14 @@ public class AffordanceBuilderFactory implements MethodLinkBuilderFactory<Afford
 	}
 
 	@Override
-	public AffordanceBuilder linkTo(Class<?> controller, Map<String, ?> parameters) {
+	public AffordanceBuilder linkTo(final Class<?> controller, final Map<String, ?> parameters) {
 		String mapping = MAPPING_DISCOVERER.getMapping(controller);
 		PartialUriTemplate partialUriTemplate = new PartialUriTemplate(mapping == null ? "/" : mapping);
 		return new AffordanceBuilder().slash(partialUriTemplate.expand(parameters));
 	}
 
 	@Override
-	public AffordanceBuilder linkTo(Object invocationValue) {
+	public AffordanceBuilder linkTo(final Object invocationValue) {
 
 		Assert.isInstanceOf(DummyInvocationUtils.LastInvocationAware.class, invocationValue);
 		DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) invocationValue;
@@ -150,7 +183,7 @@ public class AffordanceBuilderFactory implements MethodLinkBuilderFactory<Afford
 		return new AffordanceBuilder(partialUriTemplate.expand(values), Collections.singletonList(actionDescriptor));
 	}
 
-	private Set<String> getRequestParamNames(Method invokedMethod, Object[] arguments) {
+	private Set<String> getRequestParamNames(final Method invokedMethod, final Object[] arguments) {
 		return ActionDescriptorBuilder.getRequestParams(invokedMethod, arguments).keySet();
 	}
 }

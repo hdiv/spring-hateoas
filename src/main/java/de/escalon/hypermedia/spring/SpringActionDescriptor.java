@@ -487,7 +487,7 @@ public class SpringActionDescriptor implements ActionDescriptor {
 			 * TODO This is a temporal patch, to be reviewed...
 			 */
 			if (annotatedParameter == null) {
-				ActionInputParameter inputParameter = new SpringActionInputParameter(methodParameter, propertyValue,
+				ActionInputParameter inputParameter = new AnnotableSpringActionInputParameter(methodParameter, propertyValue,
 						parentParamName + paramName);
 				bodyInputParameters.add(inputParameter);
 				handler.visit(inputParameter);
@@ -548,8 +548,8 @@ public class SpringActionDescriptor implements ActionDescriptor {
 					}
 					return parentParamName + paramName;
 				} else {
-					SpringActionInputParameter inputParameter = new SpringActionInputParameter(methodParameter, propertyValue,
-							parentParamName + paramName);
+					SpringActionInputParameter inputParameter = new AnnotableSpringActionInputParameter(methodParameter,
+							propertyValue, parentParamName + paramName);
 					// TODO We need to find a better solution for this
 					inputParameter.possibleValues = annotatedParameter.possibleValues;
 					bodyInputParameters.add(inputParameter);

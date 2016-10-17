@@ -30,6 +30,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -64,7 +65,7 @@ public class AffordanceBuilder implements LinkBuilder {
 	 * @param controller the class to discover the annotation on, must not be {@literal null}.
 	 * @return builder
 	 */
-	public static AffordanceBuilder linkTo(Class<?> controller) {
+	public static AffordanceBuilder linkTo(final Class<?> controller) {
 		return FACTORY.linkTo(controller, new Object[0]);
 	}
 
@@ -78,14 +79,14 @@ public class AffordanceBuilder implements LinkBuilder {
 	 * null}.
 	 * @return builder
 	 */
-	public static AffordanceBuilder linkTo(Class<?> controller, Object... parameters) {
+	public static AffordanceBuilder linkTo(final Class<?> controller, final Object... parameters) {
 		return FACTORY.linkTo(controller, parameters);
 	}
 
 	/**
 	 * @see org.springframework.hateoas.MethodLinkBuilderFactory#linkTo(Method, Object...)
 	 */
-	public static AffordanceBuilder linkTo(Method method, Object... parameters) {
+	public static AffordanceBuilder linkTo(final Method method, final Object... parameters) {
 		return FACTORY.linkTo(method.getDeclaringClass(), method, parameters);
 	}
 
@@ -98,14 +99,14 @@ public class AffordanceBuilder implements LinkBuilder {
 	 *          {@literal null}.
 	 * @return builder
 	 */
-	public static AffordanceBuilder linkTo(Class<?> controller, Map<String, ?> parameters) {
+	public static AffordanceBuilder linkTo(final Class<?> controller, final Map<String, ?> parameters) {
 		return FACTORY.linkTo(controller, parameters);
 	}
 
 	/**
 	 * @see org.springframework.hateoas.MethodLinkBuilderFactory#linkTo(Class, Method, Object...)
 	 */
-	public static AffordanceBuilder linkTo(Class<?> controller, Method method, Object... parameters) {
+	public static AffordanceBuilder linkTo(final Class<?> controller, final Method method, final Object... parameters) {
 		return FACTORY.linkTo(controller, method, parameters);
 	}
 
@@ -129,8 +130,20 @@ public class AffordanceBuilder implements LinkBuilder {
 	 * @param methodInvocation to use for link building
 	 * @return builder
 	 */
-	public static AffordanceBuilder linkTo(Object methodInvocation) {
+	public static AffordanceBuilder linkTo(final Object methodInvocation) {
 		return FACTORY.linkTo(methodInvocation);
+	}
+
+	public static AffordanceBuilder linkTo(final Link link, final RequestMethod method) {
+		return linkTo(link, method, null);
+	}
+
+	public static AffordanceBuilder linkTo(final Link link, final RequestMethod method, final Object object) {
+		return FACTORY.linkTo(link, method, object);
+	}
+
+	public static AffordanceBuilder linkTo(final Link link, final RequestMethod method, final Class<?> type) {
+		return FACTORY.linkTo(link, method, type);
 	}
 
 	/**
@@ -147,8 +160,8 @@ public class AffordanceBuilder implements LinkBuilder {
 	 * @param partialUriTemplateComponents must not be {@literal null}
 	 * @param actionDescriptors must not be {@literal null}
 	 */
-	public AffordanceBuilder(PartialUriTemplateComponents partialUriTemplateComponents,
-			List<ActionDescriptor> actionDescriptors) {
+	public AffordanceBuilder(final PartialUriTemplateComponents partialUriTemplateComponents,
+			final List<ActionDescriptor> actionDescriptors) {
 
 		Assert.notNull(partialUriTemplateComponents);
 		Assert.notNull(actionDescriptors);
@@ -160,7 +173,7 @@ public class AffordanceBuilder implements LinkBuilder {
 		}
 	}
 
-	public static <T> T methodOn(Class<T> clazz, Object... parameters) {
+	public static <T> T methodOn(final Class<T> clazz, final Object... parameters) {
 		return DummyInvocationUtils.methodOn(clazz, parameters);
 	}
 
@@ -217,7 +230,7 @@ public class AffordanceBuilder implements LinkBuilder {
 	 *          rendering HAL.
 	 * @return builder
 	 */
-	public AffordanceBuilder reverseRel(String rev, String revertedRel) {
+	public AffordanceBuilder reverseRel(final String rev, final String revertedRel) {
 		rels.add(revertedRel);
 		reverseRels.add(rev);
 		return this;
@@ -233,7 +246,7 @@ public class AffordanceBuilder implements LinkBuilder {
 	 * @param object describing the object
 	 * @return builder
 	 */
-	public AffordanceBuilder reverseRel(String rev, String revertedRel, TypedResource object) {
+	public AffordanceBuilder reverseRel(final String rev, final String revertedRel, final TypedResource object) {
 		collectionHolder = object;
 		rels.add(0, revertedRel);
 		reverseRels.add(rev);
@@ -246,7 +259,7 @@ public class AffordanceBuilder implements LinkBuilder {
 	 * @param rel to be used as link relation
 	 * @return builder
 	 */
-	public AffordanceBuilder rel(String rel) {
+	public AffordanceBuilder rel(final String rel) {
 		rels.add(rel);
 		return this;
 	}
@@ -270,18 +283,18 @@ public class AffordanceBuilder implements LinkBuilder {
 	 * @param subject describing the subject
 	 * @return builder
 	 */
-	public AffordanceBuilder rel(TypedResource subject, String rel) {
+	public AffordanceBuilder rel(final TypedResource subject, final String rel) {
 		collectionHolder = subject;
 		rels.add(rel);
 		return this;
 	}
 
-	public AffordanceBuilder withTitle(String title) {
+	public AffordanceBuilder withTitle(final String title) {
 		linkParams.set("title", title);
 		return this;
 	}
 
-	public AffordanceBuilder withTitleStar(String titleStar) {
+	public AffordanceBuilder withTitleStar(final String titleStar) {
 		linkParams.set("title*", titleStar);
 		return this;
 	}
@@ -293,33 +306,33 @@ public class AffordanceBuilder implements LinkBuilder {
 	 * @param value of the link header param
 	 * @return builder
 	 */
-	public AffordanceBuilder withLinkParam(String name, String value) {
+	public AffordanceBuilder withLinkParam(final String name, final String value) {
 		linkParams.add(name, value);
 		return this;
 	}
 
-	public AffordanceBuilder withAnchor(String anchor) {
+	public AffordanceBuilder withAnchor(final String anchor) {
 		linkParams.set("anchor", anchor);
 		return this;
 	}
 
-	public AffordanceBuilder withHreflang(String hreflang) {
+	public AffordanceBuilder withHreflang(final String hreflang) {
 		linkParams.add("hreflang", hreflang);
 		return this;
 	}
 
-	public AffordanceBuilder withMedia(String media) {
+	public AffordanceBuilder withMedia(final String media) {
 		linkParams.set("media", media);
 		return this;
 	}
 
-	public AffordanceBuilder withType(String type) {
+	public AffordanceBuilder withType(final String type) {
 		linkParams.set("type", type);
 		return this;
 	}
 
 	@Override
-	public AffordanceBuilder slash(Object object) {
+	public AffordanceBuilder slash(final Object object) {
 
 		if (object == null) {
 			return this;
@@ -366,7 +379,7 @@ public class AffordanceBuilder implements LinkBuilder {
 	}
 
 	@Override
-	public AffordanceBuilder slash(Identifiable<?> identifiable) {
+	public AffordanceBuilder slash(final Identifiable<?> identifiable) {
 		if (identifiable == null) {
 			return this;
 		}
@@ -387,7 +400,7 @@ public class AffordanceBuilder implements LinkBuilder {
 	}
 
 	@Override
-	public Affordance withRel(String rel) {
+	public Affordance withRel(final String rel) {
 		return rel(rel).build();
 	}
 
@@ -469,9 +482,11 @@ public class AffordanceBuilder implements LinkBuilder {
 	 * @param affordanceBuilder whose action descriptors should be added to this one
 	 * @return builder
 	 */
-	public AffordanceBuilder and(AffordanceBuilder affordanceBuilder) {
-		for (ActionDescriptor actionDescriptor : affordanceBuilder.actionDescriptors) {
-			actionDescriptors.add(actionDescriptor);
+	public AffordanceBuilder and(final AffordanceBuilder... affordanceBuilders) {
+		for (AffordanceBuilder affordanceBuilder : affordanceBuilders) {
+			for (ActionDescriptor actionDescriptor : affordanceBuilder.actionDescriptors) {
+				actionDescriptors.add(actionDescriptor);
+			}
 		}
 		return this;
 	}

@@ -1,6 +1,5 @@
 package de.escalon.hypermedia.affordance;
 
-import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
 
@@ -94,15 +93,6 @@ public interface ActionInputParameter {
 	boolean hasInputConstraints();
 
 	/**
-	 * If the action input parameter is annotation-based, provide access to annotation
-	 *
-	 * @param annotation to look for
-	 * @param <T> type of annotation
-	 * @return annotation or null
-	 */
-	<T extends Annotation> T getAnnotation(Class<T> annotation);
-
-	/**
 	 * Gets possible values for this parameter.
 	 *
 	 * @param actionDescriptor in case that access to the other parameters is necessary to determine the possible values.
@@ -174,13 +164,6 @@ public interface ActionInputParameter {
 	 * @return
 	 */
 	Class<?> getParameterType();
-
-	/**
-	 * Generic type of parameter.
-	 *
-	 * @return generic type
-	 */
-	java.lang.reflect.Type getGenericParameterType();
 
 	/**
 	 * Gets input constraints.

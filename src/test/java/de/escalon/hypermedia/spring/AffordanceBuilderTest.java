@@ -57,17 +57,17 @@ public class AffordanceBuilderTest {
 	public static class DummyController {
 
 		@RequestMapping("/things")
-		public ResponseEntity createThing(@RequestBody Thing thing) {
+		public ResponseEntity createThing(@RequestBody final Thing thing) {
 			return new ResponseEntity(HttpStatus.CREATED);
 		}
 
 		@RequestMapping(value = "/things/{id}/eventStatus", method = RequestMethod.PUT)
-		public ResponseEntity updateThing(@PathVariable int id, @RequestParam EventStatusType eventStatus) {
+		public ResponseEntity updateThing(@PathVariable final int id, @RequestParam final EventStatusType eventStatus) {
 			return new ResponseEntity(HttpStatus.OK);
 		}
 
 		@RequestMapping(value = "/things/{id}", method = RequestMethod.PUT)
-		public ResponseEntity updateThing(@PathVariable int id, @RequestBody Thing thing) {
+		public ResponseEntity updateThing(@PathVariable final int id, @RequestBody final Thing thing) {
 			return new ResponseEntity(HttpStatus.OK);
 		}
 
@@ -169,7 +169,6 @@ public class AffordanceBuilderTest {
 		Assert.assertEquals("Link: <http://example.com/things/1>; rel=\"event\"", affordance.toString());
 		final ActionDescriptor actionDescriptor = affordance.getActionDescriptors().get(0);
 		final ActionInputParameter thingParameter = actionDescriptor.getRequestBody();
-		Assert.assertEquals("Thing", ((Class) thingParameter.getGenericParameterType()).getSimpleName());
 		Assert.assertThat(thingParameter.isRequestBody(), Matchers.is(true));
 		Assert.assertEquals("updateThing", actionDescriptor.getActionName());
 	}

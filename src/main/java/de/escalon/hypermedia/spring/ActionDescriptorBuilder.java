@@ -25,7 +25,8 @@ import de.escalon.hypermedia.affordance.ActionInputParameterVisitor;
 
 public class ActionDescriptorBuilder {
 
-	static ActionDescriptor createActionDescriptor(Method invokedMethod, Map<String, Object> values, Object[] arguments) {
+	static ActionDescriptor createActionDescriptor(final Method invokedMethod, final Map<String, Object> values,
+			final Object[] arguments) {
 
 		SpringActionDescriptor actionDescriptor = new SpringActionDescriptor(invokedMethod);
 
@@ -92,8 +93,8 @@ public class ActionDescriptorBuilder {
 	 * @param arguments to the method link
 	 * @return maps parameter names to parameter info
 	 */
-	private static Map<String, ActionInputParameter> getActionInputParameters(Class<? extends Annotation> annotation,
-			Method method, Object... arguments) {
+	private static Map<String, ActionInputParameter> getActionInputParameters(
+			final Class<? extends Annotation> annotation, final Method method, final Object... arguments) {
 
 		Assert.notNull(method, "MethodInvocation must not be null!");
 
@@ -109,7 +110,7 @@ public class ActionDescriptorBuilder {
 				argument = null;
 			}
 			result.put(parameter.getParameterName(),
-					new SpringActionInputParameter(parameter, argument, parameter.getParameterName()));
+					new AnnotableSpringActionInputParameter(parameter, argument, parameter.getParameterName()));
 		}
 
 		return result;
@@ -123,7 +124,8 @@ public class ActionDescriptorBuilder {
 	 * @param arguments to the method link
 	 * @return maps parameter names to parameter info
 	 */
-	private static Map<String, ActionInputParameter> getDTOActionInputParameters(Method method, Object... arguments) {
+	private static Map<String, ActionInputParameter> getDTOActionInputParameters(final Method method,
+			final Object... arguments) {
 
 		Assert.notNull(method, "MethodInvocation must not be null!");
 
@@ -142,7 +144,7 @@ public class ActionDescriptorBuilder {
 					new ActionInputParameterVisitor() {
 
 						@Override
-						public void visit(ActionInputParameter inputParameter) {
+						public void visit(final ActionInputParameter inputParameter) {
 							result.put(inputParameter.getParameterName(), inputParameter);
 						}
 					}, new ArrayList<ActionInputParameter>());
@@ -152,7 +154,7 @@ public class ActionDescriptorBuilder {
 		return result;
 	}
 
-	static Map<String, ActionInputParameter> getRequestParams(Method invokedMethod, Object[] arguments) {
+	static Map<String, ActionInputParameter> getRequestParams(final Method invokedMethod, final Object[] arguments) {
 		// the action descriptor needs to know the param type, value and name
 		Map<String, ActionInputParameter> requestParamMap = getActionInputParameters(RequestParam.class, invokedMethod,
 				arguments);
